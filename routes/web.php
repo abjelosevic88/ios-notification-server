@@ -14,3 +14,8 @@
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::post('/files', function () {
+    $file = request()->file('file')->store('public/uploads');
+    dd(Storage::url($file));
+});
