@@ -27,7 +27,7 @@
     };
 </script>
 
-<style lang="sass">
+<style lang="stylus">
     .Alert
         position: relative
         background: #ddd

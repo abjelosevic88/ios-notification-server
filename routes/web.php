@@ -11,11 +11,12 @@
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
+Route::get('/', 'IndexController@home');
+Route::get('/home', 'HomeController@index');
 
 Route::post('/files', function () {
     $file = request()->file('file')->store('public/uploads');
     dd(Storage::url($file));
 });
+
+Auth::routes();

@@ -41088,10 +41088,12 @@ require('./bootstrap');
 
 Vue.component('example', require('./components/Example.vue'));
 
+// var vueResource = require('vue-resource')
+// Vue.use(vueResource)
+
 var app = new Vue({
   el: 'body',
-  components: { Alert: _Alert2.default },
-  ready: function ready() {}
+  components: { Alert: _Alert2.default }
 });
 
 },{"./bootstrap":10,"./components/Alert.vue":11,"./components/Example.vue":12}],10:[function(require,module,exports){

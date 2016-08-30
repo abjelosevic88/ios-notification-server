@@ -15,11 +15,12 @@ require('./bootstrap');
 
 Vue.component('example', require('./components/Example.vue'));
 
+// var vueResource = require('vue-resource')
+// Vue.use(vueResource)
+
 import Alert from './components/Alert.vue';
 
 const app = new Vue({
     el: 'body',
-    components: { Alert },
-    ready() {
-    }
+    components: { Alert }
 });
