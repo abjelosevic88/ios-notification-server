@@ -26,4 +26,19 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+    /**
+     * User can have many applications.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function applications()
+    {
+        return $this->hasMany(Application::class);
+    }
+
+    public function isSuperAdmin()
+    {
+        return true; // TODO :: Change this
+    }
 }
