@@ -1,43 +1,43 @@
 <template>
-    <div :items="items">
+    <div :items="items" :appid="appid">
         <div>
             <a type="button"
                class="btn btn-default pull-right add-application-button"
                aria-label="Left Align"
-               href="/applications/create">
+               href="/messages/create?application_id={{ appid }}">
                     <span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
-                    Add Application
+                    Add Message
             </a>
         </div>
         <table class="table">
-            <caption>Applications</caption>
+            <caption>Messages</caption>
             <tr>
                 <th><strong>ID</strong></th>
-                <th><strong>Name</strong></th>
-                <th><strong>Key</strong></th>
+                <th><strong>Title</strong></th>
+                <th><strong>Publish date</strong></th>
                 <th></th>
             </tr>
-            <tr v-for="app in items">
-                <td>{{ app.id }}</td>
-                <td>{{ app.name }}</td>
-                <td>{{ app.key }}</td>
+            <tr v-for="message in items">
+                <td>{{ message.id }}</td>
+                <td>{{ message.title }}</td>
+                <td>{{ message.publish_date }}</td>
                 <td>
-                    <div class="pull-right app-icons">
-                        <a href="/applications/{{ app.id }}"
+                    <div class="pull-right message-icons">
+                        <a href="/messages/{{ message.id }}"
                            type="button"
                            class="btn btn-default"
                            data-toggle="tooltip"
                            data-placement="top"
-                           title="Show Application">
-                            <span class="glyphicon glyphicon-apple" aria-hidden="true"></span>
+                           title="Show Message">
+                            <span class="glyphicon glyphicon-send" aria-hidden="true"></span>
                         </a>
 
-                        <a href="/applications/{{ app.id }}/edit"
+                        <a href="/messages/{{ message.id }}/edit?application_id={{ appid }}"
                            type="button"
                            class="btn btn-default"
                            data-toggle="tooltip"
                            data-placement="top"
-                           title="Edit Application">
+                           title="Edit Message">
                                 <span class="glyphicon glyphicon-edit" aria-hidden="true"></span>
                         </a>
 
@@ -45,8 +45,8 @@
                                 class="btn btn-default"
                                 data-toggle="tooltip"
                                 data-placement="top"
-                                title="Delete Application"
-                                @click="deleteClicked(app)">
+                                title="Delete Message"
+                                @click="deleteClicked(message)">
                                 <span class="glyphicon glyphicon-remove" aria-hidden="true"></span>
                         </button>
                     </div>
@@ -57,21 +57,21 @@
         <modal :show.sync="showModalSuccess">
             <div slot="header"></div>
             <div slot="body">
-                Application successfully deleted!
+                Message successfully deleted!
             </div>
         </modal>
 
         <modal :show.sync="showModalFail">
             <div slot="header"></div>
             <div slot="body">
-                Error Deleting Application!
+                Error Deleting Message!
             </div>
         </modal>
 
-        <modal :show.sync="showDialog" :eventname="'delete-application'" :type="'dialog'">
+        <modal :show.sync="showDialog" :eventname="'delete-messages'" :type="'dialog'">
             <div slot="header"></div>
             <div slot="body">
-                Delete "{{ currentApp.name }}" Application?
+                Delete "{{ currentMessage.title }}" Message?
             </div>
         </modal>
     </div>
@@ -82,25 +82,34 @@
 
     export default {
         components: { Modal },
-        props: ['items'],
+        props: ['items', 'appid'],
         data() {
             return {
                 showModalSuccess: false,
                 showModalFail: false,
                 showDialog: false,
-                currentApp: 0
+                currentMessage: 0,
             };
         },
         methods: {
-            deleteClicked(app) {
+            deleteClicked(message) {
                 this.showDialog = true;
-                this.currentApp = app;
+                this.currentMessage = message;
+            },
+            addMessage() {
+                this.$http.get('/messages/' + this.currentMessage.id).then((response) => {
+                    this.items.$remove(this.currentMessage);
+                    this.showModalSuccess = true;
+                }, (response) => {
+                    this.showModalFail = true;
+                });
+                alert(this.appid);
             }
         },
         events: {
-            'dialog-ok-pressed-delete-application': function() {
-                this.$http.delete('/applications/' + this.currentApp.id).then((response) => {
-                    this.items.$remove(this.currentApp);
+            'dialog-ok-pressed-delete-messages': function() {
+                this.$http.delete('/messages/' + this.currentMessage.id).then((response) => {
+                    this.items.$remove(this.currentMessage);
                     this.showModalSuccess = true;
                 }, (response) => {
                     this.showModalFail = true;
@@ -111,9 +120,9 @@
 </script>
 
 <style lang="stylus" rel="stylesheet/stylus">
-    .add-application-button
+    .add-message-button
         margin-top: 10px;
         margin-right: 20px;
-    .app-icons
+    .message-icons
         margin-right: 10px;
 </style>

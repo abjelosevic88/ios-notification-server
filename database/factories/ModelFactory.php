@@ -34,3 +34,14 @@ $factory->define(App\Application::class, function (Faker\Generator $faker) {
         'key' => Hash::make(crypt_random_string(10)),
     ];
 });
+
+/*
+ * Message model factory.
+ */
+$factory->define(App\Message::class, function (Faker\Generator $faker) {
+    return [
+        'title' => $faker->paragraph,
+        'message' => $faker->text,
+        'publish_date' => $faker->dateTime,
+    ];
+});

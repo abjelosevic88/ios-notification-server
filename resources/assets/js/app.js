@@ -16,8 +16,9 @@ require('./bootstrap');
 Vue.component('example', require('./components/Example.vue'));
 
 import Applications from './components/Applications.vue';
+import Messages from './components/Messages.vue';
 
 const app = new Vue({
     el: 'body',
-    components: { Applications }
+    components: { Applications, Messages }
 });
