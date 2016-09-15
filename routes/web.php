@@ -20,5 +20,6 @@ Route::post('/files', function () {
 });
 
 Route::resource('applications', 'ApplicationController');
+Route::resource('messages', 'MessageController');
 
 Auth::routes();

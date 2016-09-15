@@ -40,7 +40,6 @@
             },
             eventname: {
                 type: String,
-                required: true,
             },
             type: { // modal, dialog
                 type: String,

@@ -61,7 +61,7 @@ class ApplicationPolicy
     }
 
     /**
-     * Determine whether the user can view the all application.
+     * Determine whether the user can view the all applications.
      *
      * @return boolean
      */

@@ -24,4 +24,14 @@ class Application extends Model
     {
         return $this->belongsTo(User::class);
     }
+    /**
+     * Application can have many messages.
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function messages()
+    {
+        return $this->hasMany(Message::class);
+    }
+
 }
