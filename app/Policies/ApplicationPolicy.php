@@ -59,4 +59,14 @@ class ApplicationPolicy
     {
         return $this->view($user, $application);
     }
+
+    /**
+     * Determine whether the user can view the all application.
+     *
+     * @return boolean
+     */
+    public function index()
+    {
+        return false;
+    }
 }
