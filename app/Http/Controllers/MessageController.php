@@ -4,12 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Application;
 use App\Http\Requests\MessageRequest;
+use App\Transformers\MessageTransformer;
+use Dingo\Api\Exception\StoreResourceFailedException;
 use Illuminate\Http\Request;
 use App\Message;
 use App\Http\Requests;
 use Illuminate\Validation\UnauthorizedException;
 
-class MessageController extends Controller
+class MessageController extends ApiController
 {
     /**
      * Display a listing of the resource.
