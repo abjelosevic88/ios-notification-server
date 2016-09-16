@@ -13,6 +13,8 @@
     <!-- Styles -->
     <link href="/css/app.css" rel="stylesheet">
 
+    @yield('head-style')
+
     <!-- Scripts -->
     <script>
         window.Laravel = <?php echo json_encode([
@@ -83,8 +85,11 @@
 
     <!-- Scripts -->
     <script src="/js/app.js"></script>
+
     <script>
         $('div.alert').not('.alert-important').delay(2000).fadeOut(350);
     </script>
+
+    @yield('body-scripts')
 </body>
 </html>
