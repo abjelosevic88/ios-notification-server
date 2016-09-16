@@ -36,7 +36,7 @@
                             <div class="form-group">
                                 {!! Form::label('publish_date', 'Publish Date:', [ 'class' => 'col-sm-2 control-label' ]) !!}
                                 <div class="col-sm-10">
-                                    {!! Form::date('publish_date', null, [ 'class' => 'form-control' ]) !!}
+                                    {!! Form::text('publish_date', null, [ 'class' => 'form-control', 'id' => 'datetimepicker' ]) !!}
                                 </div>
                             </div>
 
@@ -53,4 +53,16 @@
             </div>
         </div>
     </div>
+@endsection
+
+@section('body-scripts')
+    <link rel="stylesheet" type="text/css" href="/css/dateTimePicker.css" />
+    <script src="/js/dateTimePicker.js"></script>
+
+    <script>
+        jQuery('#datetimepicker').datetimepicker({
+            value: '{{ $message->publish_date }}',
+            format:'Y-m-d H:i:s'
+        });
+    </script>
 @endsection
