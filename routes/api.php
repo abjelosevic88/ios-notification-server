@@ -13,6 +13,22 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::get('/user', function (Request $request) {
-    return $request->user();
-})->middleware('auth:api');
+$api = app('Dingo\Api\Routing\Router');
+
+/*
+|--------------------------------------------------------------------------
+| Application Unauthenticated Routes
+|--------------------------------------------------------------------------
+*/
+$api->version('v1', function ($api) {
+    $api->get('/message', 'App\Http\Controllers\ApplicationController@getMessage');
+});
+
+/*
+|--------------------------------------------------------------------------
+| Application Authenticated Routes
+|--------------------------------------------------------------------------
+*/
+$api->version('v1', ['middleware' => 'jwt.auth'], function ($api) {
+    //
+});

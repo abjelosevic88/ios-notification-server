@@ -4,12 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Application;
 use App\Http\Requests\ApplicationRequest;
+use App\Transformers\MessageTransformer;
+use Dingo\Api\Exception\StoreResourceFailedException;
 use Illuminate\Http\Request;
-
-use App\Http\Requests;
 use Hash;
 
-class ApplicationController extends Controller
+class ApplicationController extends ApiController
 {
     /**
      * Display a listing of the resource.
@@ -103,5 +103,41 @@ class ApplicationController extends Controller
     {
         $this->authorize('delete', $application);
         $application->delete();
+    }
+
+    /**
+     * Return message last message.
+     *
+     * @api endpoint /message?key={key}
+     * @param Request $request
+     * @return \Dingo\Api\Http\Response
+     */
+    public function getMessage(Request $request)
+    {
+        $app = $this->checkApplicationExistence($request);
+        $message = $app->messages->last();
+
+        return $this->response->item($message, new MessageTransformer);
+    }
+
+    /**
+     * Check if application exists for given key in the request.
+     *
+     * @param Request $request Request object.
+     * @return mixed Asked apllication object.
+     */
+    private function checkApplicationExistence(Request $request)
+    {
+        $validator = app('validator')->make($request->only('key'), ['key' => 'required']);
+        if ($validator->fails()) {
+            throw new StoreResourceFailedException('Error with request.', $validator->errors());
+        }
+
+        $app = Application::whereKey($request->input('key'))->first();
+        if ($app === NULL) {
+            throw new StoreResourceFailedException('Application Not Found.');
+        }
+
+        return $app;
     }
 }
