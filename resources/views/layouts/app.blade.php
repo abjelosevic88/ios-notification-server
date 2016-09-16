@@ -8,10 +8,12 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Laravel</title>
+    <title>IOS Notification Service</title>
 
     <!-- Styles -->
     <link href="/css/app.css" rel="stylesheet">
+
+    @yield('head-style')
 
     <!-- Scripts -->
     <script>
@@ -23,6 +25,7 @@
 <body>
     <nav class="navbar navbar-default navbar-static-top">
         <div class="container">
+
             <div class="navbar-header">
 
                 <!-- Collapsed Hamburger -->
@@ -34,7 +37,7 @@
                 </button>
 
                 <!-- Branding Image -->
-                <a class="navbar-brand" href="{{ url('/') }}">
+                <a class="navbar-brand" href="{{ Auth::guest() ? url('/') : url('/home') }}">
                     IOS Notification Service
                 </a>
             </div>
@@ -58,10 +61,11 @@
                             </a>
 
                             <ul class="dropdown-menu" role="menu">
+                                <li><a href="{{ url('/home') }}">Dashboard</a></li>
                                 <li>
                                     <a href="{{ url('/logout') }}"
                                         onclick="event.preventDefault();
-                                                 document.getElementById('logout-form').submit();">
+                                        document.getElementById('logout-form').submit();">
                                         Logout
                                     </a>
 
@@ -81,5 +85,11 @@
 
     <!-- Scripts -->
     <script src="/js/app.js"></script>
+
+    <script>
+        $('div.alert').not('.alert-important').delay(2000).fadeOut(350);
+    </script>
+
+    @yield('body-scripts')
 </body>
 </html>

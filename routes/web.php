@@ -19,4 +19,7 @@ Route::post('/files', function () {
     dd(Storage::url($file));
 });
 
+Route::resource('applications', 'ApplicationController');
+Route::resource('messages', 'MessageController');
+
 Auth::routes();

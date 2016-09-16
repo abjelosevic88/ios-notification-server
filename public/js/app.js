@@ -41066,9 +41066,13 @@ exports.insert = function (css) {
 },{}],9:[function(require,module,exports){
 'use strict';
 
-var _Alert = require('./components/Alert.vue');
+var _Applications = require('./components/Applications.vue');
 
-var _Alert2 = _interopRequireDefault(_Alert);
+var _Applications2 = _interopRequireDefault(_Applications);
+
+var _Messages = require('./components/Messages.vue');
+
+var _Messages2 = _interopRequireDefault(_Messages);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -41088,15 +41092,12 @@ require('./bootstrap');
 
 Vue.component('example', require('./components/Example.vue'));
 
-// var vueResource = require('vue-resource')
-// Vue.use(vueResource)
-
 var app = new Vue({
   el: 'body',
-  components: { Alert: _Alert2.default }
+  components: { Applications: _Applications2.default, Messages: _Messages2.default }
 });
 
-},{"./bootstrap":10,"./components/Alert.vue":11,"./components/Example.vue":12}],10:[function(require,module,exports){
+},{"./bootstrap":10,"./components/Applications.vue":11,"./components/Example.vue":12,"./components/Messages.vue":13}],10:[function(require,module,exports){
 'use strict';
 
 window._ = require('lodash');
@@ -41146,49 +41147,67 @@ Vue.http.interceptors.push(function (request, next) {
 
 },{"bootstrap-sass":1,"jquery":2,"lodash":3,"vue":7,"vue-resource":6}],11:[function(require,module,exports){
 var __vueify_insert__ = require("vueify/lib/insert-css")
-var __vueify_style__ = __vueify_insert__.insert(".Alert {\n  position: relative;\n  background: #ddd;\n  border: 1px solid #c7c7c7;\n}\n.Alert--Success {\n  background: #8cff8c;\n  border: 1px solid #00f300;\n}\n.Alert--Error {\n  background: #e60000;\n  border: 1px solid #ff4d4d;\n  color: #fff;\n}\n.Alert__close {\n  position: absolute;\n  right: 1em;\n  font-weight: bold;\n  cursor: pointer;\n}\n")
+var __vueify_style__ = __vueify_insert__.insert(".add-application-button {\n  margin-top: 10px;\n  margin-right: 20px;\n}\n.app-icons {\n  margin-right: 10px;\n}\n")
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
     value: true
 });
+
+var _ModalWindow = require('./ModalWindow.vue');
+
+var _ModalWindow2 = _interopRequireDefault(_ModalWindow);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
 exports.default = {
-    props: ['type'],
+    components: { Modal: _ModalWindow2.default },
+    props: ['items'],
     data: function data() {
         return {
-            show: true
+            showModalSuccess: false,
+            showModalFail: false,
+            showDialog: false,
+            currentApp: 0
         };
     },
 
-    computed: {
-        alertClasses: function alertClasses() {
-            var type = this.type;
+    methods: {
+        deleteClicked: function deleteClicked(app) {
+            this.showDialog = true;
+            this.currentApp = app;
+        }
+    },
+    events: {
+        'dialog-ok-pressed-delete-application': function dialogOkPressedDeleteApplication() {
+            var _this = this;
 
-            return {
-                'Alert': true,
-                'Alert--Success': type == 'success',
-                'Alert--Error': type == 'error'
-            };
+            this.$http.delete('/applications/' + this.currentApp.id).then(function (response) {
+                _this.items.$remove(_this.currentApp);
+                _this.showModalSuccess = true;
+            }, function (response) {
+                _this.showModalFail = true;
+            });
         }
     }
 };
 if (module.exports.__esModule) module.exports = module.exports.default
-;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div :class=\"alertClasses\" v-show=\"show\">\n    <slot></slot>\n    <span class=\"Alert__close\" @click=\"show = false\">x</span>\n</div>\n"
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div :items=\"items\">\n    <div>\n        <a type=\"button\" class=\"btn btn-default pull-right add-application-button\" aria-label=\"Left Align\" href=\"/applications/create\">\n                <span class=\"glyphicon glyphicon-plus\" aria-hidden=\"true\"></span>\n                Add Application\n        </a>\n    </div>\n    <table class=\"table\">\n        <caption>Applications</caption>\n        <tbody><tr>\n            <th><strong>ID</strong></th>\n            <th><strong>Name</strong></th>\n            <th><strong>Key</strong></th>\n            <th></th>\n        </tr>\n        <tr v-for=\"app in items\">\n            <td>{{ app.id }}</td>\n            <td>{{ app.name }}</td>\n            <td>{{ app.key }}</td>\n            <td>\n                <div class=\"pull-right app-icons\">\n                    <a href=\"/applications/{{ app.id }}\" type=\"button\" class=\"btn btn-default\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Show Application\">\n                        <span class=\"glyphicon glyphicon-apple\" aria-hidden=\"true\"></span>\n                    </a>\n\n                    <a href=\"/applications/{{ app.id }}/edit\" type=\"button\" class=\"btn btn-default\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Edit Application\">\n                            <span class=\"glyphicon glyphicon-edit\" aria-hidden=\"true\"></span>\n                    </a>\n\n                    <button type=\"submit\" class=\"btn btn-default\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Delete Application\" @click=\"deleteClicked(app)\">\n                            <span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></span>\n                    </button>\n                </div>\n            </td>\n        </tr>\n    </tbody></table>\n\n    <modal :show.sync=\"showModalSuccess\">\n        <div slot=\"header\"></div>\n        <div slot=\"body\">\n            Application successfully deleted!\n        </div>\n    </modal>\n\n    <modal :show.sync=\"showModalFail\">\n        <div slot=\"header\"></div>\n        <div slot=\"body\">\n            Error Deleting Application!\n        </div>\n    </modal>\n\n    <modal :show.sync=\"showDialog\" :eventname=\"'delete-application'\" :type=\"'dialog'\">\n        <div slot=\"header\"></div>\n        <div slot=\"body\">\n            Delete \"{{ currentApp.name }}\" Application?\n        </div>\n    </modal>\n</div>\n"
 if (module.hot) {(function () {  module.hot.accept()
   var hotAPI = require("vue-hot-reload-api")
   hotAPI.install(require("vue"), true)
   if (!hotAPI.compatible) return
   module.hot.dispose(function () {
-    __vueify_insert__.cache[".Alert {\n  position: relative;\n  background: #ddd;\n  border: 1px solid #c7c7c7;\n}\n.Alert--Success {\n  background: #8cff8c;\n  border: 1px solid #00f300;\n}\n.Alert--Error {\n  background: #e60000;\n  border: 1px solid #ff4d4d;\n  color: #fff;\n}\n.Alert__close {\n  position: absolute;\n  right: 1em;\n  font-weight: bold;\n  cursor: pointer;\n}\n"] = false
+    __vueify_insert__.cache[".add-application-button {\n  margin-top: 10px;\n  margin-right: 20px;\n}\n.app-icons {\n  margin-right: 10px;\n}\n"] = false
     document.head.removeChild(__vueify_style__)
   })
   if (!module.hot.data) {
-    hotAPI.createRecord("_v-78dc6db6", module.exports)
+    hotAPI.createRecord("_v-eec61f8e", module.exports)
   } else {
-    hotAPI.update("_v-78dc6db6", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+    hotAPI.update("_v-eec61f8e", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":7,"vue-hot-reload-api":5,"vueify/lib/insert-css":8}],12:[function(require,module,exports){
+},{"./ModalWindow.vue":14,"vue":7,"vue-hot-reload-api":5,"vueify/lib/insert-css":8}],12:[function(require,module,exports){
 'use strict';
 
 Object.defineProperty(exports, "__esModule", {
@@ -41211,6 +41230,137 @@ if (module.hot) {(function () {  module.hot.accept()
     hotAPI.update("_v-91af5378", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
   }
 })()}
-},{"vue":7,"vue-hot-reload-api":5}]},{},[9]);
+},{"vue":7,"vue-hot-reload-api":5}],13:[function(require,module,exports){
+var __vueify_insert__ = require("vueify/lib/insert-css")
+var __vueify_style__ = __vueify_insert__.insert(".add-message-button {\n  margin-top: 10px;\n  margin-right: 20px;\n}\n.message-icons {\n  margin-right: 10px;\n}\n")
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+
+var _ModalWindow = require('./ModalWindow.vue');
+
+var _ModalWindow2 = _interopRequireDefault(_ModalWindow);
+
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+
+exports.default = {
+    components: { Modal: _ModalWindow2.default },
+    props: ['items', 'appid'],
+    data: function data() {
+        return {
+            showModalSuccess: false,
+            showModalFail: false,
+            showDialog: false,
+            currentMessage: 0
+        };
+    },
+
+    methods: {
+        deleteClicked: function deleteClicked(message) {
+            this.showDialog = true;
+            this.currentMessage = message;
+        },
+        addMessage: function addMessage() {
+            var _this = this;
+
+            this.$http.get('/messages/' + this.currentMessage.id).then(function (response) {
+                _this.items.$remove(_this.currentMessage);
+                _this.showModalSuccess = true;
+            }, function (response) {
+                _this.showModalFail = true;
+            });
+            alert(this.appid);
+        }
+    },
+    events: {
+        'dialog-ok-pressed-delete-messages': function dialogOkPressedDeleteMessages() {
+            var _this2 = this;
+
+            this.$http.delete('/messages/' + this.currentMessage.id).then(function (response) {
+                _this2.items.$remove(_this2.currentMessage);
+                _this2.showModalSuccess = true;
+            }, function (response) {
+                _this2.showModalFail = true;
+            });
+        }
+    }
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div :items=\"items\" :appid=\"appid\">\n    <div>\n        <a type=\"button\" class=\"btn btn-default pull-right add-application-button\" aria-label=\"Left Align\" href=\"/messages/create?application_id={{ appid }}\">\n                <span class=\"glyphicon glyphicon-plus\" aria-hidden=\"true\"></span>\n                Add Message\n        </a>\n    </div>\n    <table class=\"table\">\n        <caption>Messages</caption>\n        <tbody><tr>\n            <th><strong>ID</strong></th>\n            <th><strong>Title</strong></th>\n            <th><strong>Publish date</strong></th>\n            <th></th>\n        </tr>\n        <tr v-for=\"message in items\">\n            <td>{{ message.id }}</td>\n            <td>{{ message.title }}</td>\n            <td>{{ message.publish_date }}</td>\n            <td>\n                <div class=\"pull-right message-icons\">\n                    <a href=\"/messages/{{ message.id }}\" type=\"button\" class=\"btn btn-default\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Show Message\">\n                        <span class=\"glyphicon glyphicon-send\" aria-hidden=\"true\"></span>\n                    </a>\n\n                    <a href=\"/messages/{{ message.id }}/edit?application_id={{ appid }}\" type=\"button\" class=\"btn btn-default\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Edit Message\">\n                            <span class=\"glyphicon glyphicon-edit\" aria-hidden=\"true\"></span>\n                    </a>\n\n                    <button type=\"submit\" class=\"btn btn-default\" data-toggle=\"tooltip\" data-placement=\"top\" title=\"Delete Message\" @click=\"deleteClicked(message)\">\n                            <span class=\"glyphicon glyphicon-remove\" aria-hidden=\"true\"></span>\n                    </button>\n                </div>\n            </td>\n        </tr>\n    </tbody></table>\n\n    <modal :show.sync=\"showModalSuccess\">\n        <div slot=\"header\"></div>\n        <div slot=\"body\">\n            Message successfully deleted!\n        </div>\n    </modal>\n\n    <modal :show.sync=\"showModalFail\">\n        <div slot=\"header\"></div>\n        <div slot=\"body\">\n            Error Deleting Message!\n        </div>\n    </modal>\n\n    <modal :show.sync=\"showDialog\" :eventname=\"'delete-messages'\" :type=\"'dialog'\">\n        <div slot=\"header\"></div>\n        <div slot=\"body\">\n            Delete \"{{ currentMessage.title }}\" Message?\n        </div>\n    </modal>\n</div>\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  module.hot.dispose(function () {
+    __vueify_insert__.cache[".add-message-button {\n  margin-top: 10px;\n  margin-right: 20px;\n}\n.message-icons {\n  margin-right: 10px;\n}\n"] = false
+    document.head.removeChild(__vueify_style__)
+  })
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-2b94823c", module.exports)
+  } else {
+    hotAPI.update("_v-2b94823c", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"./ModalWindow.vue":14,"vue":7,"vue-hot-reload-api":5,"vueify/lib/insert-css":8}],14:[function(require,module,exports){
+var __vueify_insert__ = require("vueify/lib/insert-css")
+var __vueify_style__ = __vueify_insert__.insert("\n.modal-mask {\n    position: fixed;\n    z-index: 9998;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background-color: rgba(0, 0, 0, .5);\n    display: table;\n    -webkit-transition: opacity .3s ease;\n    transition: opacity .3s ease;\n}\n\n.modal-wrapper {\n    display: table-cell;\n    vertical-align: middle;\n}\n\n.modal-container {\n    width: 300px;\n    margin: 0px auto;\n    padding: 20px 30px;\n    background-color: #fff;\n    border-radius: 2px;\n    box-shadow: 0 2px 8px rgba(0, 0, 0, .33);\n    -webkit-transition: all .3s ease;\n    transition: all .3s ease;\n    font-family: Helvetica, Arial, sans-serif;\n}\n\n.modal-header h3 {\n    margin-top: 0;\n    color: #42b983;\n}\n\n.modal-body {\n    margin: 20px 0;\n}\n\n.footer-buttons {\n    float: right;\n}\n\n.footer-cancel-btn {\n    margin-left: 15px;\n}\n\n.modal-enter, .modal-leave {\n    opacity: 0;\n}\n\n.modal-enter .modal-container,\n.modal-leave .modal-container {\n    -webkit-transform: scale(1.1);\n    transform: scale(1.1);\n}\n")
+'use strict';
+
+Object.defineProperty(exports, "__esModule", {
+    value: true
+});
+exports.default = {
+    props: {
+        show: {
+            type: Boolean,
+            required: true,
+            twoWay: true
+        },
+        eventname: {
+            type: String
+        },
+        type: { // modal, dialog
+            type: String,
+            default: 'modal'
+        }
+    },
+    data: function data() {
+        return {};
+    },
+
+    methods: {
+        okPressed: function okPressed() {
+            this.show = false;
+            if (this.eventname !== undefined) {
+                this.$dispatch('dialog-ok-pressed-' + this.eventname);
+            }
+        },
+        cancelPressed: function cancelPressed() {
+            this.show = false;
+            if (this.eventname !== undefined) {
+                this.$dispatch('dialog-cancel-pressed-' + this.eventname);
+            }
+        }
+    }
+};
+if (module.exports.__esModule) module.exports = module.exports.default
+;(typeof module.exports === "function"? module.exports.options: module.exports).template = "\n<div class=\"modal-mask\" v-show=\"show\" transition=\"modal\">\n    <div class=\"modal-wrapper\">\n        <div class=\"modal-container\">\n\n            <div class=\"modal-header\">\n                <slot name=\"header\"></slot>\n            </div>\n\n            <div class=\"modal-body\">\n                <slot name=\"body\"></slot>\n            </div>\n\n            <div class=\"modal-footer\">\n                <slot name=\"footer\">\n                    <div class=\"footer-buttons\">\n                        <button class=\"btn btn-default\" @click=\"okPressed()\">\n                            OK\n                        </button>\n                        <button v-show=\"type == 'dialog'\" class=\"btn btn-default footer-cancel-btn\" @click=\"cancelPressed()\">\n                            Cancel\n                        </button>\n                    </div>\n                </slot>\n            </div>\n        </div>\n    </div>\n</div>\n"
+if (module.hot) {(function () {  module.hot.accept()
+  var hotAPI = require("vue-hot-reload-api")
+  hotAPI.install(require("vue"), true)
+  if (!hotAPI.compatible) return
+  module.hot.dispose(function () {
+    __vueify_insert__.cache["\n.modal-mask {\n    position: fixed;\n    z-index: 9998;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background-color: rgba(0, 0, 0, .5);\n    display: table;\n    -webkit-transition: opacity .3s ease;\n    transition: opacity .3s ease;\n}\n\n.modal-wrapper {\n    display: table-cell;\n    vertical-align: middle;\n}\n\n.modal-container {\n    width: 300px;\n    margin: 0px auto;\n    padding: 20px 30px;\n    background-color: #fff;\n    border-radius: 2px;\n    box-shadow: 0 2px 8px rgba(0, 0, 0, .33);\n    -webkit-transition: all .3s ease;\n    transition: all .3s ease;\n    font-family: Helvetica, Arial, sans-serif;\n}\n\n.modal-header h3 {\n    margin-top: 0;\n    color: #42b983;\n}\n\n.modal-body {\n    margin: 20px 0;\n}\n\n.footer-buttons {\n    float: right;\n}\n\n.footer-cancel-btn {\n    margin-left: 15px;\n}\n\n.modal-enter, .modal-leave {\n    opacity: 0;\n}\n\n.modal-enter .modal-container,\n.modal-leave .modal-container {\n    -webkit-transform: scale(1.1);\n    transform: scale(1.1);\n}\n"] = false
+    document.head.removeChild(__vueify_style__)
+  })
+  if (!module.hot.data) {
+    hotAPI.createRecord("_v-1a7b1f57", module.exports)
+  } else {
+    hotAPI.update("_v-1a7b1f57", module.exports, (typeof module.exports === "function" ? module.exports.options : module.exports).template)
+  }
+})()}
+},{"vue":7,"vue-hot-reload-api":5,"vueify/lib/insert-css":8}]},{},[9]);
 
 //# sourceMappingURL=app.js.map
